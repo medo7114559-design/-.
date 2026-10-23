@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>كويز Electronics 1</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{
+  --bg:#FFF4EC; --surface:#FFFFFF; --ink:#2A2140; --muted:#6E6683; --line:#F1DACB;
+  --accent:#F28C5B; --accent-ink:#FFFFFF; --accent-soft:#FFE3D2;
+  --ok:#17825A; --ok-bg:#DDF5EA; --bad:#C8344D; --bad-bg:#FDE4E8; --focus:#6B4FD8;
+  color-scheme: light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1B1728; --surface:#272238; --ink:#F4EEF8; --muted:#B3A9C8; --line:#3B3452;
+    --accent:#F6A27A; --accent-ink:#2A1A10; --accent-soft:#3A2B2C;
+    --ok:#5FD9A5; --ok-bg:#1C3A31; --bad:#FF8FA2; --bad-bg:#44212B; --focus:#B7A6FF;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1B1728; --surface:#272238; --ink:#F4EEF8; --muted:#B3A9C8; --line:#3B3452;
+  --accent:#F6A27A; --accent-ink:#2A1A10; --accent-soft:#3A2B2C;
+  --ok:#5FD9A5; --ok-bg:#1C3A31; --bad:#FF8FA2; --bad-bg:#44212B; --focus:#B7A6FF;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;line-height:1.6;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 40px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 20px}
+h1{font-size:30px;line-height:1.25;margin:0 0 10px;font-weight:800}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.cat{font-size:54px;line-height:1;margin-bottom:10px}
+button{font-family:inherit;font-size:17px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.primary{background:var(--accent);color:var(--accent-ink);border:0;border-radius:14px;padding:13px 22px;font-weight:800;width:100%}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;font-weight:600}
+.chip{background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-size:14px}
+.count{color:var(--muted);font-size:15px;direction:ltr}
+.bar{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px}
+.bar>i{display:block;height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .25s}
+.stem{direction:ltr;text-align:left;font-size:19px;font-weight:600;line-height:1.5;margin:0 0 14px}
+.fig{background:#fff;border-radius:12px;padding:8px;margin:0 0 16px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;direction:ltr}
+.fig svg{max-width:100%;height:auto}
+.fig text{fill:#222;stroke:none;font:600 12px Cairo,sans-serif}
+.opts{display:grid;gap:10px}
+.opts.w{grid-template-columns:1fr 1fr}
+.opt{direction:ltr;text-align:left;display:flex;align-items:flex-start;gap:12px;width:100%;background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.45}
+.opts.w .opt{flex-direction:column;align-items:stretch;gap:6px;padding:8px}
+.wv{background:#fff;border-radius:8px;display:block}
+.wv svg{display:block;width:100%;height:auto}
+.opt .l{flex:none;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;font-weight:800;font-size:14px}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt[disabled]{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.ok .l{background:var(--ok);color:var(--surface)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt.bad .l{background:var(--bad);color:var(--surface)}
+.fb{margin-top:16px;border-radius:14px;padding:12px 14px;font-weight:600}
+.fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fb.bad{background:var(--bad-bg);color:var(--bad)}
+.fb .big{font-size:22px;font-weight:800;display:block}
+.fb .ans{direction:ltr;unicode-bidi:isolate;display:block;margin-top:4px;color:var(--ink);font-weight:600}
+.next{margin-top:14px}
+.score{font-size:76px;font-weight:800;line-height:1;margin:6px 0;direction:ltr;font-variant-numeric:tabular-nums}
+.pct{font-size:22px;font-weight:600;color:var(--muted);margin-bottom:14px}
+[hidden]{display:none !important}
+@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<section id="start" class="card">
+  <h1 style="margin-bottom:12px;white-space:nowrap;font-size:clamp(20px,6.5vw,30px)">القطه المشمشيه 🐈</h1>
+  <h1>Electronics 1</h1>
+  <button class="primary" id="go" style="margin-top:18px">Start</button>
+</section>
+
+<section id="quiz" class="card" hidden>
+  <div class="top"><span class="chip" id="part"></span><span class="count" id="count"></span></div>
+  <div class="bar"><i id="prog"></i></div>
+  <div id="fig" class="fig"></div>
+  <p class="stem" id="stem"></p>
+  <div class="opts" id="opts"></div>
+  <div class="fb" id="fb" role="status" hidden></div>
+  <button class="primary next" id="next" hidden></button>
+</section>
+
+<section id="end" class="card" hidden>
+  <div class="cat">🐈</div>
+  <h1>الدرجة النهائية</h1>
+  <div class="score" id="score"></div>
+  <div class="pct" id="pct"></div>
+  <p id="msg"></p>
+  <button class="primary" id="again">ابدأ من جديد</button>
+</section>
+
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+
+/* ---------- circuit drawing helpers ---------- */
+function W(d){return '<path d="'+d+'"/>'}
+function T(x,y,s,a){return '<text x="'+x+'" y="'+y+'" text-anchor="'+(a||'start')+'">'+s+'</text>'}
+function dot(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="3" fill="#fff"/>'}
+function gnd(x,y){return W('M'+x+' '+y+'v6m-9 0h18m-13 4h8m-5 4h2')}
+function ac(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="14" fill="#fff"/>'+W('M'+(x-8)+' '+y+'q4 -10 8 0t8 0')}
+function vo(x,a,b){return T(x+8,a+5,'+')+T(x+8,b-1,'−')+T(x+18,(a+b)/2+4,'Vo')}
+function el(t,a,b,c,d){
+  var L=Math.hypot(c-a,d-b),m=L/2,g=Math.atan2(d-b,c-a)*57.2958,s;
+  if(t=='D')s='<path d="M0 0H'+(m-9)+'M'+(m+9)+' 0H'+L+'M'+(m+9)+' -9V9"/><path fill="#222" d="M'+(m-9)+' -9V9L'+(m+9)+' 0Z"/>';
+  else if(t=='R')s='<path d="M0 0H'+(m-20)+'l5 -9 10 18 10 -18 10 18 5 -9H'+L+'"/>';
+  else s='<path d="M0 0H'+(m-4)+'M'+(m-4)+' -13V13M'+(m+4)+' -7V7M'+(m+4)+' 0H'+L+'"/>';
+  return '<g transform="translate('+a+' '+b+') rotate('+g+')">'+s+'</g>';
+}
+function svg(w,h,s){return '<svg viewBox="-30 0 '+(w+30)+' '+h+'" style="width:'+(w+30)+'px" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+s+'</svg>'}
+
+var C={};
+C.s1=svg(240,125,el('B',30,30,30,110)+W('M30 30H55M135 30H200M30 110H200')+el('D',55,30,95,30)+el('D',95,30,135,30)+el('R',200,30,200,110)+T(12,75,'12 V','end')+T(75,16,'Si','middle')+T(115,16,'Ge','middle')+T(186,75,'5.6kΩ','end')+vo(200,30,110));
+C.s2=svg(240,125,el('B',30,30,30,110)+W('M30 30H70M70 30V60M130 30V60M130 45H190M30 110H190')+el('D',70,30,130,30)+el('D',70,60,130,60)+el('R',190,45,190,110)+T(12,75,'12 V','end')+T(100,16,'Si','middle')+T(100,80,'Ge','middle')+T(176,82,'2.2kΩ','end')+vo(190,45,110));
+C.s3=svg(260,125,el('B',30,30,30,110)+W('M30 30H40M180 30H215M30 110H215')+el('D',40,30,80,30)+el('D',80,30,120,30)+el('R',120,30,180,30)+el('R',215,30,215,110)+T(12,75,'1.5 V','end')+T(60,16,'Si','middle')+T(100,16,'GaAs','middle')+T(150,14,'1kΩ','middle')+T(201,75,'1kΩ','end')+vo(215,30,110));
+C.or=svg(250,130,W('M10 25H40M10 65H40M100 25V65M100 45H195')+el('D',40,25,100,25)+el('D',40,65,100,65)+el('R',150,45,150,105)+gnd(150,105)+dot(195,45)+T(5,29,'10 V','end')+T(5,69,'0 V','end')+T(70,14,'Si','middle')+T(70,54,'Si','middle')+T(136,80,'1kΩ','end')+T(205,49,'Vo'));
+C.and=svg(250,130,W('M15 40H45M15 80H45M105 40V80M105 60H195')+el('D',105,40,45,40)+el('D',105,80,45,80)+el('R',150,18,150,60)+dot(195,60)+T(10,44,'10 V','end')+T(10,84,'0 V','end')+T(75,28,'Si','middle')+T(75,68,'Si','middle')+T(150,12,'10 V','middle')+T(136,43,'1kΩ','end')+T(205,64,'Vo'));
+C.hw=svg(240,125,ac(30,70)+W('M30 56V30H60M100 30H160M30 84V110H160')+el('D',60,30,100,30)+el('R',160,30,160,110)+T(12,75,'Vin','end')+T(80,16,'Si','middle')+T(146,75,'R','end')+vo(160,30,110));
+C.br=svg(250,145,ac(10,65)+W('M10 51V22H110M10 79V108H110M160 65H210M60 65H42')+el('D',110,22,160,65)+el('D',110,108,160,65)+el('D',60,65,110,22)+el('D',60,65,110,108)+el('R',210,65,210,120)+gnd(42,65)+gnd(210,120)+T(196,98,'2.2kΩ','end')+vo(210,65,120)+T(-4,69,'Vin','end'));
+C.ct=svg(260,150,ac(10,70)+W('M10 56V40H60M10 84V100H60M78 38V102M83 38V102M100 40H125M100 100H125M100 70H112M175 40V100M175 70H215')+'<path d="M60 40a7.5 7.5 0 0 1 0 15a7.5 7.5 0 0 1 0 15a7.5 7.5 0 0 1 0 15a7.5 7.5 0 0 1 0 15"/><path d="M100 40a7.5 7.5 0 0 0 0 15a7.5 7.5 0 0 0 0 15a7.5 7.5 0 0 0 0 15a7.5 7.5 0 0 0 0 15"/>'+el('D',125,40,175,40)+el('D',125,100,175,100)+el('R',215,70,215,125)+gnd(112,70)+gnd(215,125)+T(90,28,'7 : 1','middle')+T(150,30,'D1','middle')+T(150,126,'D2','middle')+T(201,100,'R','end')+vo(215,70,125));
+C.rb=svg(240,145,ac(10,65)+W('M10 51V20H100M10 79V110H100M170 20V110')+el('D',60,20,90,65)+el('D',60,110,90,65)+el('R',100,20,170,20)+el('R',100,110,170,110)+el('R',90,65,170,65)+T(135,8,'2.2kΩ','middle')+T(135,138,'2.2kΩ','middle')+T(130,88,'2.2kΩ','middle')+T(130,50,'+  Vo  −','middle')+T(-4,69,'Vin','end'));
+function sc(aid){return svg(210,125,ac(10,70)+W('M10 56V30H30M110 30H150M10 84V110H150')+(aid?el('B',70,30,30,30):el('B',30,30,70,30))+el('D',70,30,110,30)+el('R',150,30,150,110)+T(50,16,'5 V','middle')+T(90,16,'Ideal','middle')+T(136,75,'R','end')+T(-4,75,'Vin','end')+vo(150,30,110))}
+function pc(br,lab){return svg(250,125,ac(10,70)+W('M10 56V30H30M90 30H200M10 84V110H200')+el('R',30,30,90,30)+br+dot(200,30)+dot(200,110)+T(60,16,'R','middle')+T(210,34,'Vo')+T(-4,75,'Vin','end')+lab)}
+C.p1=pc(el('D',130,70,130,30)+el('B',130,70,130,110),T(142,55,'Si')+T(142,95,'4 V'));
+C.p2=pc(el('D',130,30,130,70)+el('B',130,70,130,110),T(142,55,'Si')+T(142,95,'4 V'));
+C.p3=pc(el('D',110,30,110,70)+el('B',110,70,110,110)+el('D',160,70,160,30)+el('B',160,110,160,70),T(98,55,'Si','end')+T(98,95,'5.3 V','end')+T(172,55,'Si')+T(172,95,'7.3 V'));
+C.sc1=sc(0);C.sc2=sc(1);
+
+/* ---------- waveform plotting ---------- */
+function sig(i,t){var p=t%1;if(i.k=='s')return i.a*Math.sin(2*Math.PI*t);if(i.k=='t')return i.a*(p<.25?4*p:p<.75?2-4*p:4*p-4);return p<.5?i.hi:i.lo}
+function fmt(x){return parseFloat(x.toFixed(2))+' V'}
+function plot(f,inp,lo,hi,title){
+  var w=170,h=92,P=15,N=400,pts=[],mx=-1e9,mn=1e9;
+  function Y(v){return P+(hi-v)/(hi-lo)*(h-2*P)}
+  for(var i=0;i<=N;i++){var v=f(sig(inp,i/N*2));mx=Math.max(mx,v);mn=Math.min(mn,v);pts.push((6+i/N*(w-12)).toFixed(1)+','+Y(v).toFixed(1))}
+  var s='<svg viewBox="0 0 '+w+' '+h+'" stroke-linecap="round"><path d="M3 '+Y(0)+'H'+(w-3)+'" stroke="#aaa" stroke-width="1"/><polyline fill="none" stroke="#d9622b" stroke-width="2.2" points="'+pts.join(' ')+'"/>';
+  function lab(v,x,a){return '<path d="M3 '+Y(v)+'H'+(w-3)+'" stroke="#d9622b" stroke-width=".8" stroke-dasharray="3 3"/><text x="'+x+'" y="'+(Y(v)-3)+'" text-anchor="'+a+'" style="fill:#444;stroke:none;font:700 10px Cairo,sans-serif">'+fmt(v)+'</text>'}
+  if(Math.abs(mx)>.01)s+=lab(mx,5,'start');
+  if(mx-mn>.01&&Math.abs(mn)>.01)s+=lab(mn,w-5,'end');
+  if(title)s+='<text x="'+(w-5)+'" y="11" text-anchor="end" style="fill:#888;stroke:none;font:600 10px Cairo,sans-serif">'+title+'</text>';
+  return s+'</svg>';
+}
+
+/* ---------- questions (the correct answer is always listed first, then shuffled) ---------- */
+var S={k:'s'};
+var abs=Math.abs;
+function clamp(a,b){return function(v){return Math.max(a,Math.min(b,v))}}
+var DATA=[
+{p:'DC circuits',fig:C.s1,q:'Si and Ge diodes in series with a 5.6 kΩ resistor and a 12 V source. Find Vo.',o:['11 V','11.3 V','12 V','10.7 V']},
+{p:'DC circuits',fig:C.s2,q:'Si and Ge diodes in parallel (same polarity), 2.2 kΩ resistor, 12 V source. Find Vo.',o:['11.7 V','11.3 V','12 V','0.3 V']},
+{p:'DC circuits',fig:C.s3,q:'1.5 V source, Si and GaAs diodes in series, two 1 kΩ resistors. Find Vo (across the second 1 kΩ).',o:['0 V','0.8 V','0.75 V','1.5 V']},
+{p:'Logic gates',fig:C.or,q:'OR gate with Si diodes. V1 = 10 V and V2 = 0 V. Find Vo.',o:['9.3 V','10 V','0.7 V','0 V']},
+{p:'Logic gates',fig:C.and,q:'AND gate with Si diodes. V1 = 10 V and V2 = 0 V. Find Vo.',o:['0.7 V','0 V','9.3 V','10 V']},
+{p:'Rectifiers',fig:C.hw,inp:{k:'s',a:10},lo:-12,hi:12,showIn:1,q:'Half-wave rectifier, Si diode, Vin = 10 sin ωt. Which Vo is correct?',
+  w:[function(v){return v>.7?v-.7:0},function(v){return v>0?v:0},function(v){return v<-.7?v+.7:0},function(v){return abs(v)>.7?abs(v)-.7:0}]},
+{p:'Rectifiers',fig:C.br,inp:{k:'s',a:100},lo:-110,hi:110,q:'Bridge rectifier with Si diodes, Vin = 100 sin ωt (peak 100 V). Which Vo is correct?',
+  w:[function(v){return abs(v)>1.4?abs(v)-1.4:0},function(v){return abs(v)>.7?abs(v)-.7:0},function(v){return abs(v)},function(v){return v>1.4?v-1.4:0}]},
+{p:'Rectifiers',fig:C.ct,inp:{k:'s',a:169.7},lo:-26,hi:26,q:'Center-tapped full-wave rectifier, ideal diodes, 120 V rms primary, turns ratio 7 : 1 (primary : secondary). Which Vo is correct?',
+  w:[function(v){return abs(v)/14},function(v){return abs(v)/7},function(v){return abs(v)/14-.7},function(v){return abs(v)/9.9}]},
+{p:'Rectifiers',fig:C.rb,inp:{k:'s',a:170},lo:-125,hi:125,q:'Ideal diodes, all resistors 2.2 kΩ, Vin = 170 sin ωt. Which Vo (across the middle resistor) is correct?',
+  w:[function(v){return abs(v)/3},function(v){return abs(v)/2},function(v){return abs(v)*2/3},function(v){return v>0?v/3:0}]},
+{p:'Clippers',fig:C.sc1,inp:{k:'s',a:20},lo:-25,hi:25,showIn:1,q:'Series clipper, ideal diode, 5 V battery, Vin = 20 sin ωt. Which Vo is correct?',
+  w:[function(v){return v>5?v-5:0},function(v){return v>0?v:0},function(v){return v>0?v+5:0},function(v){return v<-5?v+5:0}]},
+{p:'Clippers',fig:C.sc2,inp:{k:'q',hi:20,lo:-10},lo:-12,hi:28,showIn:1,q:'Series clipper, ideal diode, 5 V battery aiding the diode, square input +20 V / −10 V. Which Vo is correct?',
+  w:[function(v){return v>0?v+5:0},function(v){return v>0?v-5:0},function(v){return v>0?v:0},function(v){return v+5}]},
+{p:'Clippers',fig:C.p1,inp:{k:'t',a:16},lo:-18,hi:18,showIn:1,q:'Parallel clipper, Si diode, 4 V battery, triangular input ±16 V. Which Vo is correct?',
+  w:[function(v){return Math.max(3.3,v)},function(v){return Math.max(4,v)},function(v){return Math.min(3.3,v)},function(v){return Math.max(4.7,v)}]},
+{p:'Clippers',fig:C.p2,inp:{k:'s',a:8},lo:-10,hi:10,showIn:1,q:'Parallel clipper, Si diode, 4 V battery, Vin = 8 sin ωt. Which Vo is correct?',
+  w:[function(v){return Math.min(4.7,v)},function(v){return Math.min(4,v)},function(v){return Math.min(3.3,v)},function(v){return Math.max(-4.7,v)}]},
+{p:'Clippers',fig:C.p3,inp:{k:'t',a:10},lo:-12,hi:12,showIn:1,q:'Two-level clipper, Si diodes, batteries 5.3 V and 7.3 V, triangular input ±10 V. Which Vo is correct?',
+  w:[clamp(-8,6),clamp(-7.3,5.3),clamp(-6,8),clamp(-5.3,7.3)]}
+];
+
+/* ---------- engine ---------- */
+var list,idx,score,locked;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function prepare(q){
+  var items=(q.w||q.o).map(function(x,i){return {x:x,ok:i===0}});
+  shuffle(items);
+  return {q:q,items:items,a:items.findIndex(function(z){return z.ok})};
+}
+function start(){
+  list=shuffle(DATA.slice()).map(prepare);
+  idx=0;score=0;
+  $('start').hidden=true;$('end').hidden=true;$('quiz').hidden=false;
+  show();
+}
+function show(){
+  var it=list[idx],q=it.q;locked=false;
+  $('part').textContent=q.p;
+  $('count').textContent=(idx+1)+' / '+list.length;
+  $('prog').style.width=(idx/list.length*100)+'%';
+  $('fig').innerHTML=q.fig+(q.showIn?'<div style="width:170px">'+plot(function(v){return v},q.inp,q.lo,q.hi,'Vin')+'</div>':'');
+  $('stem').textContent=q.q;
+  var box=$('opts');box.innerHTML='';box.className='opts'+(q.w?' w':'');
+  it.items.forEach(function(z,i){
+    var b=document.createElement('button');
+    b.type='button';b.className='opt'+(q.w?' w':'');
+    var l=document.createElement('span');l.className='l';l.textContent='ABCD'.charAt(i);
+    b.appendChild(l);
+    if(q.w){var d=document.createElement('span');d.className='wv';d.innerHTML=plot(z.x,q.inp,q.lo,q.hi);b.appendChild(d)}
+    else{var s=document.createElement('span');s.textContent=z.x;b.appendChild(s)}
+    b.addEventListener('click',function(){choose(i)});
+    box.appendChild(b);
+  });
+  $('fb').hidden=true;$('next').hidden=true;
+  window.scrollTo(0,0);
+}
+function choose(i){
+  if(locked)return;locked=true;
+  var it=list[idx],btns=$('opts').children,right=(i===it.a);
+  if(right)score++;
+  for(var k=0;k<btns.length;k++){
+    btns[k].disabled=true;
+    if(k===it.a)btns[k].classList.add('ok');
+    else if(k===i)btns[k].classList.add('bad');
+  }
+  var fb=$('fb');fb.className='fb '+(right?'ok':'bad');fb.innerHTML='';
+  var big=document.createElement('span');big.className='big';big.textContent=right?'صح ✔':'غلط ✘';
+  fb.appendChild(big);
+  if(!right){
+    var t=document.createElement('span');t.textContent='الإجابة الصح:';
+    var a=document.createElement('span');a.className='ans';
+    a.textContent='ABCD'.charAt(it.a)+(it.q.w?'':') '+it.items[it.a].x);
+    fb.appendChild(t);fb.appendChild(a);
+  }
+  fb.hidden=false;
+  var nx=$('next');nx.textContent=(idx===list.length-1)?'شوف الدرجة':'السؤال التالي';nx.hidden=false;
+  nx.focus({preventScroll:true});
+}
+function finish(){
+  $('quiz').hidden=true;$('end').hidden=false;
+  var p=Math.round(score/list.length*100);
+  $('score').textContent=score+' / '+list.length;
+  $('pct').textContent=p+'%';
+  $('msg').textContent=p>=90?'ممتاز! أنت جاهز للكويز.':p>=75?'جامد، شوية مراجعة وتبقى تمام.':p>=50?'كويس، راجع الأسئلة اللي غلطت فيها وجرّب تاني.':'محتاج مراجعة تانية للملخص، وبعدها جرّب تاني.';
+  window.scrollTo(0,0);
+}
+$('go').addEventListener('click',start);
+$('again').addEventListener('click',start);
+$('next').addEventListener('click',function(){if(idx===list.length-1)finish();else{idx++;show()}});
+})();
+</script>
+</body>
+</html>
